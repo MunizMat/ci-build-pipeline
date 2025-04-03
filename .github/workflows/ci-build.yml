@@ -14,5 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - run: yarn --frozen-lockfile && du -sh /node_modules
-    - run: yarn build && du -sh /dist
+    - run: yarn --frozen-lockfile && du -sh ./node_modules
+    - run: yarn build && du -sh ./dist
