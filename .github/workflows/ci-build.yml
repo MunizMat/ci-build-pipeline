@@ -14,5 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - run: yarn --frozen-lockfile && du -sh ./node_modules
-    - run: yarn build && du -sh ./dist
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20.18.0
+        cache: 'yarn'
+    - name: 'Install dependencies'
+      run: yarn --frozen-lockfile
+    - name: 'Build project'
+      run: yarn build
