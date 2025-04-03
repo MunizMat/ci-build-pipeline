@@ -1,6 +1,6 @@
 name: Email API CI Build
 
-run-name: Build triggered by {{ github.event_name }} & defined by @${{ github.actor }}
+run-name: Build triggered by ${{ github.event_name }} & defined by @${{ github.actor }}
 
 on:
   push:
@@ -14,11 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.18.0'
-        cache: 'npm'
-    - name: Install dependencies
-      run: yarn --frozen-lockfile && du -sh /node_modules
-    - name: Build project
-      run: yarn build && du -sh /dist
+    - run: yarn --frozen-lockfile && du -sh /node_modules
+    - run: yarn build && du -sh /dist
