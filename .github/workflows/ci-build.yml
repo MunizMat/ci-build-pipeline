@@ -7,14 +7,14 @@ on:
     branches:
       - 'main'
 
+defaults:
+  run:
+    working-directory: ./api
+
 jobs:
   build:
     name: 'Build project'
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./api
 
     steps:
     - uses: actions/checkout@v4
