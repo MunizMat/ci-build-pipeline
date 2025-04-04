@@ -1,8 +1,17 @@
 #!/usr/bin/env node
+/* --------------- External -------------- */
 import 'source-map-support/register';
-import * as cdk from 'aws-cdk-lib';
-import { InfraStack } from '../lib/infra-stack';
+import { App } from 'aws-cdk-lib';
 
-const app = new cdk.App();
-new InfraStack(app, 'InfraStack', {
+/* --------------- Stacks -------------- */
+import { CiBuildPipelineStack } from '../src/stacks/CiBuildPipelineStack';
+
+const app = new App();
+const environment = process.env.ENVIRONMENT || '';
+
+const stackName = `CiBuildPipelineStack-${environment}`;
+
+new CiBuildPipelineStack(app, stackName, {
+  stackName,
+  environment,
 });
