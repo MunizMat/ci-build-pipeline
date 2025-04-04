@@ -26,7 +26,16 @@ interface Body {
   workflow: string;
   status: string;
   buildId: string;
+  timestamp: string;
+  duration: string;
 }
+
+const STATUS_LABEL: Record<string, string> = {
+  success: 'succeeded',
+  failure: 'failed',
+  cancelled: 'cancelled',
+  skipped: 'skipped',
+};
 
 export const handler: APIGatewayProxyHandlerV2 = async (
   event,
@@ -40,8 +49,19 @@ export const handler: APIGatewayProxyHandlerV2 = async (
         body: { message: 'Request is missing required body' },
       });
 
-    const { branch, commit, repository, status, userName, workflow, buildId } =
-      JSON.parse(event.body) as Body;
+    const {
+      branch,
+      commit,
+      repository,
+      status,
+      userName,
+      workflow,
+      buildId,
+      timestamp,
+      duration,
+    } = JSON.parse(event.body) as Body;
+
+    const statusLabel = STATUS_LABEL[status] ?? 'failed';
 
     const params: SendEmailCommandInput = {
       Source: 'noreply@resume-refine.com',
@@ -58,18 +78,18 @@ export const handler: APIGatewayProxyHandlerV2 = async (
                 message: commit.message,
                 url: commit.url,
               },
-              duration: '30s',
+              pipelineUrl: `https://github.com/${repository}/actions/runs/${buildId}`,
               workflow,
               repository,
               status,
-              timestamp: 'now',
               userName,
-              pipelineUrl: `https://github.com/${repository}/actions/runs/${buildId}`,
+              timestamp,
+              duration,
             }),
           },
         },
         Subject: {
-          Data: 'Pipeline build',
+          Data: `CI build ${statusLabel} on ${repository} (${commit.message})`,
         },
       },
     };

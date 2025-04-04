@@ -144,7 +144,7 @@ export const pipelineNotificationEmail = ({
             <div class="status-card ${status ?? 'success'}">
                 <h2>${workflow} - ${capitalize(status || 'success')}</h2>
                 <p><strong>Timestamp:</strong> ${timestamp}</p>
-                <p><strong>Duration:</strong> ${duration}</p>
+                <p><strong>Duration:</strong> ${duration}s</p>
             </div>
             
             <div class="info-item">

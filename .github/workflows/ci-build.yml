@@ -16,22 +16,44 @@ jobs:
       run:
         working-directory: api
 
+    outputs:
+      duration: ${{ steps.duration_calc.outputs.duration }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Start timer
+        id: timer_start
+        run: echo "start=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20.18.0
           cache-dependency-path: api/yarn.lock
           cache: "yarn"
-      - name: "Install dependencies"
+      
+      - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: "Build project"
+      
+      - name: Build project
         run: yarn build
-      - name: "Upload artifcates to S3"
+      
+      - name: Upload artifcates to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: aws s3 sync dist s3://email-service-ci-build-bucket-prod/builds/${{ github.run_id }}
+      
+      - name: Calculate duration
+        id: duration_calc
+        run: |
+          end=$(date +%s)
+          start=${{ steps.timer_start.outputs.start }}
+          duration=$((end - start))
+          echo "duration=$duration" >> $GITHUB_OUTPUT
+          echo "Duration: $duration seconds"
 
   notify-result:
     name: Notify result
@@ -42,7 +64,8 @@ jobs:
     steps:
       - name: "Call notifications API"
         run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           curl -i \
           -H "Accept: application/json" \
-          -X POST -d '{"branch":"${{ github.ref_name }}","repository":"${{ github.repository }}","userName":"${{ github.actor }}","commit":{"hash":"${{ github.sha }}","message":"${{ github.event.head_commit.message }}","url":"https://github.com/${{ github.event.organization }}/${{ github.repository }}/commit/${{ github.sha }}"},"workflow":"${{ github.workflow }}","status":"${{ needs.build.result }}", "buildId": "${{ github.run_id }}"}' \
+          -X POST -d '{"branch":"${{ github.ref_name }}","repository":"${{ github.repository }}","userName":"${{ github.actor }}","commit":{"hash":"${{ github.sha }}","message":"${{ github.event.head_commit.message }}","url":"https://github.com/${{ github.event.organization }}/${{ github.repository }}/commit/${{ github.sha }}"},"workflow":"${{ github.workflow }}","status":"${{ needs.build.result }}", "buildId": "${{ github.run_id }}", "timestamp": "'"$TIMESTAMP"'", "duration": "${{ needs.build.outputs.duration }}"}' \
           https://eswi9rdwzc.execute-api.us-east-1.amazonaws.com/prod/notifications
