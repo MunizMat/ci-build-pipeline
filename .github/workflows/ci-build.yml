@@ -32,3 +32,14 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: aws s3 sync dist s3://email-service-ci-build-bucket-prod/builds/${{ github.run_id }}
+
+  notify-result:
+    name: Notify result
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Call notifications API'
+        run: | curl -i \
+                -H "Accept: application/json" \
+                -X POST -d '{"branch":"${{ github.ref_name }}","repository":"${{ github.repository }}","userName":"${{ github.actor }}","commit":{"hash":"${{ github.sha }}","message":"${{ github.event.head_commit.message }}","url":"https://github.com/${{ github.event.organization }}/${{ github.event.repository }}/commit/${{ github.sha }}"},"workflow":"${{ github.workflow }}","status":"${{ github.action_status }}"}' \
+                https://eswi9rdwzc.execute-api.us-east-1.amazonaws.com/prod/notifications
