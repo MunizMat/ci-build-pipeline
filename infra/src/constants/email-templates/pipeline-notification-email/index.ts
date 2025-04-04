@@ -3,29 +3,29 @@ import { capitalize } from "../../../utils/capitalize";
 
 /* ---------------- Interfaces ----------------- */
 interface PipelineNotificationEmailInput {
-  status: 'failure' | 'success';
-  userName: string;
-  repository: string;
-  branch: string;
-  commit: {
-    url: string;
-    hash: string;
-    message: string;
-  };
-  pipelineName: string;
-  duration: string;
-  timestamp: string;
+    status: string;
+    userName: string;
+    repository: string;
+    branch: string;
+    commit: {
+        url: string;
+        hash: string;
+        message: string;
+    };
+    workflow: string;
+    duration: string;
+    timestamp: string;
 }
 
 export const pipelineNotificationEmail = ({
-  status,
-  userName,
-  repository,
-  branch,
-  commit,
-  pipelineName,
-  duration,
-  timestamp,
+    status,
+    userName,
+    repository,
+    branch,
+    commit,
+    workflow,
+    duration,
+    timestamp,
 }: PipelineNotificationEmailInput) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -111,8 +111,8 @@ export const pipelineNotificationEmail = ({
             <p>Your build pipeline has completed with the following status:</p>
             
             <!-- Dynamic status card -->
-            <div class="status-card ${status}">
-                <h2 style="margin-top: 0;">${pipelineName} - ${capitalize(status)}</h2>
+            <div class="status-card ${status ?? 'success'}">
+                <h2 style="margin-top: 0;">${workflow} - ${capitalize(status || 'success')}</h2>
                 <p><strong>Timestamp:</strong> ${timestamp}</p>
                 <p><strong>Duration:</strong> ${duration}</p>
             </div>

@@ -14,10 +14,30 @@ import { sesClient } from '../../../clients/ses';
 /* -------------- Constants -------------- */
 import { pipelineNotificationEmail } from '../../../constants/email-templates/pipeline-notification-email';
 
+interface Body {
+  branch: string;
+  repository: string
+  userName: string;
+  commit: {
+    hash: string;
+    message: string;
+    url: string;
+  },
+  workflow: string;
+  status: string;
+}
 
 export const handler: APIGatewayProxyHandlerV2 = async (event): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     console.log('EVENT: ', event);
+
+    if (!event.body)
+      return httpResponse({
+        status: 400,
+        body: { message: 'Request is missing required body' }
+      });
+
+    const { branch, commit, repository, status, userName, workflow } = JSON.parse(event.body) as Body;
 
     const params: SendEmailCommandInput = {
       Source: 'noreply@resume-refine.com',
@@ -28,18 +48,18 @@ export const handler: APIGatewayProxyHandlerV2 = async (event): Promise<APIGatew
         Body: {
           Html: {
             Data: pipelineNotificationEmail({
-              branch: 'test',
+              branch,
               commit: {
-                hash: 'test',
-                message: 'test',
-                url: 'https://github.com',
+                hash: commit.hash,
+                message: commit.message,
+                url: commit.url,
               },
               duration: '30s',
-              pipelineName: 'Pipeline',
-              repository: 'Repo',
-              status: 'success',
+              workflow,
+              repository,
+              status,
               timestamp: 'now',
-              userName: 'Muniz'
+              userName,
             })
           },
         },
