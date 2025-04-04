@@ -12,10 +12,6 @@ jobs:
     name: "Build project"
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: api
-
     outputs:
       duration: ${{ steps.duration_calc.outputs.duration }}
 
@@ -36,15 +32,18 @@ jobs:
       
       - name: Install dependencies
         run: yarn --frozen-lockfile
+        working-directory: api
       
       - name: Build project
         run: yarn build
+        working-directory: api
       
       - name: Upload artifcates to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: aws s3 sync dist s3://email-service-ci-build-bucket-prod/builds/${{ github.run_id }}
+        working-directory: api
       
       - name: Calculate duration
         id: duration_calc
