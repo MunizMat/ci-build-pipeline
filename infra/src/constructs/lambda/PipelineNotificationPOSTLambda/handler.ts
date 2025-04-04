@@ -16,33 +16,36 @@ import { pipelineNotificationEmail } from '../../../constants/email-templates/pi
 
 interface Body {
   branch: string;
-  repository: string
+  repository: string;
   userName: string;
   commit: {
     hash: string;
     message: string;
     url: string;
-  },
+  };
   workflow: string;
   status: string;
 }
 
-export const handler: APIGatewayProxyHandlerV2 = async (event): Promise<APIGatewayProxyStructuredResultV2> => {
+export const handler: APIGatewayProxyHandlerV2 = async (
+  event,
+): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
     console.log('EVENT: ', event);
 
     if (!event.body)
       return httpResponse({
         status: 400,
-        body: { message: 'Request is missing required body' }
+        body: { message: 'Request is missing required body' },
       });
 
-    const { branch, commit, repository, status, userName, workflow } = JSON.parse(event.body) as Body;
+    const { branch, commit, repository, status, userName, workflow } =
+      JSON.parse(event.body) as Body;
 
     const params: SendEmailCommandInput = {
       Source: 'noreply@resume-refine.com',
       Destination: {
-        ToAddresses: ['matheusmuniz215@gmail.com']
+        ToAddresses: ['matheusmuniz215@gmail.com'],
       },
       Message: {
         Body: {
@@ -60,27 +63,27 @@ export const handler: APIGatewayProxyHandlerV2 = async (event): Promise<APIGatew
               status,
               timestamp: 'now',
               userName,
-            })
+            }),
           },
         },
         Subject: {
-          Data: 'Pipeline build'
-        }
-      }
+          Data: 'Pipeline build',
+        },
+      },
     };
 
-    await sesClient.send(new SendEmailCommand(params))
+    await sesClient.send(new SendEmailCommand(params));
 
     return httpResponse({
       body: { message: 'OK' },
-      status: 200
+      status: 200,
     });
   } catch (error) {
     console.error(error);
 
     return httpResponse({
       body: { message: 'Internal server error' },
-      status: 500
+      status: 500,
     });
   }
-}
+};

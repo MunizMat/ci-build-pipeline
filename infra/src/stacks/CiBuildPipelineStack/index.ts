@@ -14,27 +14,48 @@ interface Props extends StackProps {
 
 export class CiBuildPipelineStack extends Stack {
   readonly emailServiceCiBuildBucket: EmailServiceCIBuildBucket;
+
   readonly pipelineNotificationPostLambda: PipelineNotificationPOSTLambda;
+
   readonly emailServiceNotificationsRestApi: EmailServiceNotificationsAPI;
+
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id, props);
 
     const env = props.environment;
 
-    this.emailServiceCiBuildBucket = new EmailServiceCIBuildBucket(this, `EmailServiceCIBuildBucket-${env}`, {
-      env,
-    });
+    this.emailServiceCiBuildBucket = new EmailServiceCIBuildBucket(
+      this,
+      `EmailServiceCIBuildBucket-${env}`,
+      {
+        env,
+      },
+    );
 
-    this.emailServiceNotificationsRestApi = new EmailServiceNotificationsAPI(this, `EmailServiceNotificationsAPI-${env}`, {
-      env,
-    });
+    this.emailServiceNotificationsRestApi = new EmailServiceNotificationsAPI(
+      this,
+      `EmailServiceNotificationsAPI-${env}`,
+      {
+        env,
+      },
+    );
 
-    this.pipelineNotificationPostLambda = new PipelineNotificationPOSTLambda(this, `PipelineNotificationPOSTLambda-${env}`, {
-      env,
-    });
+    this.pipelineNotificationPostLambda = new PipelineNotificationPOSTLambda(
+      this,
+      `PipelineNotificationPOSTLambda-${env}`,
+      {
+        env,
+      },
+    );
 
-    const notificationsResource = this.emailServiceNotificationsRestApi.restApi.root.addResource('notifications');
+    const notificationsResource =
+      this.emailServiceNotificationsRestApi.restApi.root.addResource(
+        'notifications',
+      );
 
-    notificationsResource.addMethod('POST', new LambdaIntegration(this.pipelineNotificationPostLambda.function));
+    notificationsResource.addMethod(
+      'POST',
+      new LambdaIntegration(this.pipelineNotificationPostLambda.function),
+    );
   }
 }

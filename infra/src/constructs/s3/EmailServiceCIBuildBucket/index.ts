@@ -1,7 +1,7 @@
 /* ----------------- External ----------------- */
-import { Duration, RemovalPolicy } from "aws-cdk-lib";
-import { Bucket } from "aws-cdk-lib/aws-s3";
-import { Construct } from "constructs";
+import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Construct } from 'constructs';
 
 interface Props {
   env: string;
@@ -19,9 +19,9 @@ export class EmailServiceCIBuildBucket extends Construct {
       lifecycleRules: [
         {
           prefix: '/builds',
-          expiration: Duration.days(3)
-        }
-      ]
+          expiration: Duration.days(3),
+        },
+      ],
     });
   }
 }
