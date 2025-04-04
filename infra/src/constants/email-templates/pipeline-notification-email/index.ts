@@ -15,6 +15,7 @@ interface PipelineNotificationEmailInput {
   workflow: string;
   duration: string;
   timestamp: string;
+  pipelineUrl: string;
 }
 
 export const pipelineNotificationEmail = ({
@@ -26,6 +27,7 @@ export const pipelineNotificationEmail = ({
   workflow,
   duration,
   timestamp,
+  pipelineUrl,
 }: PipelineNotificationEmailInput) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -42,6 +44,7 @@ export const pipelineNotificationEmail = ({
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
+            font-size: 16px; 
         }
         .container {
             max-width: 600px;
@@ -52,19 +55,27 @@ export const pipelineNotificationEmail = ({
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .header {
-            padding: 20px;
-            background: #1a73e8;
+            padding: 25px; 
             color: white;
             text-align: center;
+            font-size: 18px; /* Larger font */
+        }
+        .header.success {
+            background: #34a853; 
+        }
+        .header.failure {
+            background: #ea4335; 
         }
         .content {
-            padding: 25px;
+            padding: 30px; /* More spacious */
+            font-size: 16px; /* Increased from 14px */
         }
         .status-card {
-            border-left: 4px solid;
-            padding: 15px;
-            margin: 20px 0;
+            border-left: 5px solid; /* Thicker border */
+            padding: 20px; /* More padding */
+            margin: 25px 0; /* More spacing */
             background: #f9f9f9;
+            font-size: 16px;
         }
         .success {
             border-color: #34a853;
@@ -73,22 +84,37 @@ export const pipelineNotificationEmail = ({
             border-color: #ea4335;
         }
         .info-item {
-            margin-bottom: 10px;
+            margin-bottom: 15px; /* More spacing */
+            font-size: 16px;
+        }
+        h1 {
+            font-size: 24px; /* Larger heading */
+            margin: 0;
+        }
+        h2 {
+            font-size: 20px; /* Larger subheading */
+            margin-top: 0;
         }
         .button {
             display: inline-block;
-            padding: 12px 24px;
-            margin: 15px 0;
-            background: #1a73e8;
+            padding: 14px 28px; /* Larger button */
+            margin: 20px 0; /* More spacing */
             color: white;
             text-decoration: none;
             border-radius: 4px;
             font-weight: bold;
+            font-size: 16px; /* Larger button text */
+        }
+        .success .button {
+            background: #34a853;
+        }
+        .failure .button {
+            background: #ea4335;
         }
         .footer {
-            padding: 15px;
+            padding: 20px; /* More padding */
             text-align: center;
-            font-size: 12px;
+            font-size: 14px; /* Slightly larger footer */
             color: #777777;
             background: #f5f5f5;
         }
@@ -96,12 +122,16 @@ export const pipelineNotificationEmail = ({
             .container {
                 margin: 10px;
             }
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <!-- Dynamic header color based on status -->
+        <div class="header ${status ?? 'success'}">
             <h1>Build Pipeline Notification</h1>
         </div>
         
@@ -112,9 +142,7 @@ export const pipelineNotificationEmail = ({
             
             <!-- Dynamic status card -->
             <div class="status-card ${status ?? 'success'}">
-                <h2 style="margin-top: 0;">${workflow} - ${capitalize(
-  status || 'success',
-)}</h2>
+                <h2>${workflow} - ${capitalize(status || 'success')}</h2>
                 <p><strong>Timestamp:</strong> ${timestamp}</p>
                 <p><strong>Duration:</strong> ${duration}</p>
             </div>
@@ -130,7 +158,16 @@ export const pipelineNotificationEmail = ({
             
             <p>If you did not initiate this build or believe this is an error, please contact your DevOps team.</p>
             
+            <!-- Dynamic button color -->
+            <a href="${pipelineUrl}" class="button ${status ?? 'success'}">
+                View Pipeline Details
+            </a>
+            
             <p>Best regards,<br>DevOps Team</p>
+        </div>
+        
+        <div class="footer">
+            © ${new Date().getFullYear()} Your Company Name. All rights reserved.
         </div>
     </div>
 </body>

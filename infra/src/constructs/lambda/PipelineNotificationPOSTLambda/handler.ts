@@ -25,6 +25,7 @@ interface Body {
   };
   workflow: string;
   status: string;
+  buildId: string;
 }
 
 export const handler: APIGatewayProxyHandlerV2 = async (
@@ -39,7 +40,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
         body: { message: 'Request is missing required body' },
       });
 
-    const { branch, commit, repository, status, userName, workflow } =
+    const { branch, commit, repository, status, userName, workflow, buildId } =
       JSON.parse(event.body) as Body;
 
     const params: SendEmailCommandInput = {
@@ -63,6 +64,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
               status,
               timestamp: 'now',
               userName,
+              pipelineUrl: `https://github.com/${repository}/actions/runs/${buildId}`,
             }),
           },
         },

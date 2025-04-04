@@ -1,6 +1,6 @@
-name: Email API CI Build
+name: CI Build
 
-run-name: Build triggered by ${{ github.event_name }} & defined by @${{ github.actor }}
+run-name: ${{ github.event.head_commit.message }} by @${{ github.actor }}
 
 on:
   push:
@@ -37,11 +37,12 @@ jobs:
     name: Notify result
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ !cancelled() }}
 
     steps:
       - name: "Call notifications API"
         run: |
           curl -i \
           -H "Accept: application/json" \
-          -X POST -d '{"branch":"${{ github.ref_name }}","repository":"${{ github.repository }}","userName":"${{ github.actor }}","commit":{"hash":"${{ github.sha }}","message":"${{ github.event.head_commit.message }}","url":"https://github.com/${{ github.event.organization }}/${{ github.repository }}/commit/${{ github.sha }}"},"workflow":"${{ github.workflow }}","status":"${{ github.action_status }}"}' \
+          -X POST -d '{"branch":"${{ github.ref_name }}","repository":"${{ github.repository }}","userName":"${{ github.actor }}","commit":{"hash":"${{ github.sha }}","message":"${{ github.event.head_commit.message }}","url":"https://github.com/${{ github.event.organization }}/${{ github.repository }}/commit/${{ github.sha }}"},"workflow":"${{ github.workflow }}","status":"${{ needs.build.result }}", "buildId": "${{ github.run_id }}"}' \
           https://eswi9rdwzc.execute-api.us-east-1.amazonaws.com/prod/notifications
