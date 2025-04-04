@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./api
+    working-directory: api
 
 jobs:
   build:
@@ -21,6 +21,7 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20.18.0
+        cache-dependency-path: api/yarn.lock
         cache: 'yarn'
     - name: 'Install dependencies'
       run: yarn --frozen-lockfile
@@ -30,4 +31,4 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: aws s3 sync ./dist s3://email-service-ci-build-bucket-prod/builds/${{ github.run_id }}
+      run: aws s3 sync dist s3://email-service-ci-build-bucket-prod/builds/${{ github.run_id }}
