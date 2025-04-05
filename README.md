@@ -7,5 +7,6 @@ This repository contains the solution for the CI Build Pipeline challenge from [
 - Dependency management and caching with the node-setup action to speed the build time.
 - Build artifact managment: The pipeline's workflow is configured to upload the build output to a bucket in AWS S3. 
 - Notifications: After the build process the pipeline sends details of the build to a REST endpoint responsible for notifying consumers. The endpoint is currently configured to only send an email with the details of the pipeline execution, but it could easily be configured to send notifications to different destinations
+- Environment separation: The pipeline is configured for two different enviroments: A "staging" environment, which is represented by the `development` branch and a "production" environment, which is represented by the `main` branch
 
 ![Captura de tela 2025-04-04 211456](https://github.com/user-attachments/assets/2f61e589-b8b9-4ca7-9a0a-506134c82ae0)
