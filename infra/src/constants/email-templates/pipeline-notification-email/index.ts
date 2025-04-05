@@ -134,7 +134,7 @@ export const pipelineNotificationEmail = ({
     <div class="container">
         <!-- Dynamic header color based on status -->
         <div class="header ${status ?? 'success'}">
-            <h1>Build Pipeline Notification</h1>
+            <h1>Build Pipeline Notification - ${environment}</h1>
         </div>
         
         <div class="content">
@@ -145,7 +145,7 @@ export const pipelineNotificationEmail = ({
             <!-- Dynamic status card -->
             <div class="status-card ${status ?? 'success'}">
                 <h2>${workflow} - ${capitalize(status || 'success')}</h2>
-                <p><strong>Timestamp:</strong> ${timestamp}</p>
+                <p><strong>Date:</strong> ${timestamp}</p>
                 <p><strong>Duration:</strong> ${duration}s</p>
             </div>
             

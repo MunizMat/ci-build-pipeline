@@ -68,6 +68,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (
     const environment = process.env.ENVIRONMENT || '';
 
     const environmentLabel = ENVIRONMENT_LABELS[environment];
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: 'UTC',
+    });
 
     const params: SendEmailCommandInput = {
       Source: 'noreply@resume-refine.com',
@@ -89,14 +94,14 @@ export const handler: APIGatewayProxyHandlerV2 = async (
               repository,
               status,
               userName,
-              timestamp,
+              timestamp: formatter.format(new Date(timestamp)),
               duration,
               environment: environmentLabel,
             }),
           },
         },
         Subject: {
-          Data: `${environment} CI build ${statusLabel} on ${repository} (${commit.message})`,
+          Data: `${environmentLabel} CI build ${statusLabel} on ${repository} (${commit.message})`,
         },
       },
     };
