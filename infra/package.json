@@ -9,6 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "deploy:stg": "cross-env ENVIRONMENT=STG cdk deploy",
     "deploy:prod": "cross-env ENVIRONMENT=PROD cdk deploy"
   },
   "devDependencies": {

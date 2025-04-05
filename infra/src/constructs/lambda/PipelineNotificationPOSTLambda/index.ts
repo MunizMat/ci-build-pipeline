@@ -22,6 +22,9 @@ export class PipelineNotificationPOSTLambda extends Construct {
         functionName: `pipeline-notification-post-lambda-${props.env.toLowerCase()}`,
         entry: join(__dirname, 'handler.ts'),
         runtime: Runtime.NODEJS_LATEST,
+        environment: {
+          ENVIRONMENT: props.env,
+        },
       },
     );
 

@@ -16,6 +16,7 @@ interface PipelineNotificationEmailInput {
   duration: string;
   timestamp: string;
   pipelineUrl: string;
+  environment: string;
 }
 
 export const pipelineNotificationEmail = ({
@@ -28,13 +29,14 @@ export const pipelineNotificationEmail = ({
   duration,
   timestamp,
   pipelineUrl,
+  environment,
 }: PipelineNotificationEmailInput) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Build Pipeline Notification</title>
+    <title>Build Pipeline Notification - ${environment}</title>
     <style>
         /* Base styles */
         body {
@@ -98,7 +100,7 @@ export const pipelineNotificationEmail = ({
         .button {
             display: inline-block;
             padding: 14px 28px; /* Larger button */
-            margin: 20px 0; /* More spacing */
+            background: #f9f9f9;
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -148,26 +150,26 @@ export const pipelineNotificationEmail = ({
             </div>
             
             <div class="info-item">
-                <strong>Repository:</strong> ${repository} (Branch: ${branch})
+                <strong>Repository:</strong> <a href="https://github.com/${repository}" style="text-decoration:none;color:#f36319">${repository}</a>
             </div>
             <div class="info-item">
-                <strong>Commit:</strong> <a href="${commit.url}">${
-  commit.hash
-}</a> - ${commit.message}
+                <strong>Branch:</strong> ${branch}
+            </div>
+            <div class="info-item">
+                <strong>Commit:</strong> ${
+                  commit.message
+                } (<a style="text-decoration:none;color:#f36319" href="${
+  commit.url
+}">#${commit.hash.slice(0, 10)}</a>)
             </div>
             
-            <p>If you did not initiate this build or believe this is an error, please contact your DevOps team.</p>
-            
-            <!-- Dynamic button color -->
             <a href="${pipelineUrl}" class="button ${status ?? 'success'}">
                 View Pipeline Details
             </a>
-            
-            <p>Best regards,<br>DevOps Team</p>
         </div>
         
         <div class="footer">
-            © ${new Date().getFullYear()} Your Company Name. All rights reserved.
+            © ${new Date().getFullYear()}. All rights reserved.
         </div>
     </div>
 </body>

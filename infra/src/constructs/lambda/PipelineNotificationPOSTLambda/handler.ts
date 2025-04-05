@@ -30,19 +30,22 @@ interface Body {
   duration: string;
 }
 
-const STATUS_LABEL: Record<string, string> = {
+const STATUS_LABELS: Record<string, string> = {
   success: 'succeeded',
   failure: 'failed',
   cancelled: 'cancelled',
   skipped: 'skipped',
 };
 
+const ENVIRONMENT_LABELS: Record<string, string> = {
+  PROD: 'Production',
+  STG: 'Staging',
+};
+
 export const handler: APIGatewayProxyHandlerV2 = async (
   event,
 ): Promise<APIGatewayProxyStructuredResultV2> => {
   try {
-    console.log('EVENT: ', event);
-
     if (!event.body)
       return httpResponse({
         status: 400,
@@ -61,7 +64,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (
       duration,
     } = JSON.parse(event.body) as Body;
 
-    const statusLabel = STATUS_LABEL[status] ?? 'failed';
+    const statusLabel = STATUS_LABELS[status] ?? 'failed';
+    const environment = process.env.ENVIRONMENT || '';
+
+    const environmentLabel = ENVIRONMENT_LABELS[environment];
 
     const params: SendEmailCommandInput = {
       Source: 'noreply@resume-refine.com',
@@ -85,11 +91,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (
               userName,
               timestamp,
               duration,
+              environment: environmentLabel,
             }),
           },
         },
         Subject: {
-          Data: `CI build ${statusLabel} on ${repository} (${commit.message})`,
+          Data: `${environment} CI build ${statusLabel} on ${repository} (${commit.message})`,
         },
       },
     };
